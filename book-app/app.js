@@ -6,8 +6,10 @@ const tip = document.querySelector('#tip');
 const list = document.querySelector('#book-list');
 const filters = document.querySelector('.filters');
 
-let books = [];
+let books = JSON.parse(localStorage.getItem('books') || '[]');
 let currentFilter = 'all';
+
+const save = () => localStorage.setItem('books', JSON.stringify(books));
 
 const render = () => {
   list.innerHTML = '';
@@ -29,6 +31,7 @@ const render = () => {
     del.textContent = '删除';
     del.addEventListener('click', () => {
       books.splice(books.indexOf(book), 1);
+      save();
       render();
     });
     li.appendChild(del);
@@ -54,6 +57,7 @@ form.addEventListener('submit', (e) => {
     author: authorInput.value.trim(),
     rating: Number(ratingInput.value)
   });
+  save();
   tip.textContent = '';
   form.reset();
   render();
