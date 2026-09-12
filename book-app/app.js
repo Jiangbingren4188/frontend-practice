@@ -1,27 +1,46 @@
-// app.js
 const form = document.querySelector('#add-form');
 const nameInput = document.querySelector('#book-name');
 const authorInput = document.querySelector('#book-author');
 const ratingInput = document.querySelector('#book-rating');
 const tip = document.querySelector('#tip');
 const list = document.querySelector('#book-list');
+const filters = document.querySelector('.filters');
 
 let books = [];
+let currentFilter = 'all';
 
 const render = () => {
   list.innerHTML = '';
-  if (books.length === 0) {
+  const shown = books.filter(b =>
+    currentFilter === 'all' ? true :
+    currentFilter === 'high' ? b.rating >= 8 : b.rating < 8
+  );
+  if (shown.length === 0) {
     const li = document.createElement('li');
-    li.textContent = '暂无图书';
+    li.textContent = '没有符合条件的图书';
     list.appendChild(li);
     return;
   }
-  books.forEach(book => {
+  shown.forEach(book => {
     const li = document.createElement('li');
     li.textContent = `《${book.name}》 作者：${book.author} 评分：${book.rating}分`;
+    const del = document.createElement('span');
+    del.className = 'del';
+    del.textContent = '删除';
+    del.addEventListener('click', () => {
+      books.splice(books.indexOf(book), 1);
+      render();
+    });
+    li.appendChild(del);
     list.appendChild(li);
   });
 };
+
+filters.addEventListener('click', (e) => {
+  if (e.target.tagName !== 'BUTTON') return;
+  currentFilter = e.target.dataset.filter;
+  render();
+});
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
